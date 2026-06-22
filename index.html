@@ -8,9 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap');
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -20,71 +18,71 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background-image: url('loading-bg.png.png');
+  background-image: url('loading-bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-.card {
-  width: 90%;
-  max-width: 520px;
-  padding: 38px 30px;
-  border-radius: 36px;
-  text-align: center;
-  background: rgba(255,255,255,0.88);
-  border: 6px solid rgba(255,255,255,0.85);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.22);
-  animation: pop 0.7s ease;
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(2px);
+  z-index: 0;
 }
 
-@keyframes pop {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.loading-card {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 520px;
+  padding: 40px 32px;
+  border-radius: 38px;
+  text-align: center;
+  background: rgba(255,255,255,0.78);
+  border: 5px solid rgba(255,255,255,0.9);
+  box-shadow: 0 28px 65px rgba(0,0,0,0.22);
+  animation: popIn 0.7s ease;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .book {
-  font-size: 72px;
+  font-size: 74px;
   animation: bounce 1.3s infinite ease-in-out;
 }
 
 @keyframes bounce {
-  0%,100% {
-    transform: translateY(0) rotate(-3deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(3deg);
-  }
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
 }
 
 .badge {
   display: inline-block;
-  margin-top: 18px;
-  padding: 10px 22px;
+  margin-top: 16px;
+  padding: 10px 24px;
   border-radius: 999px;
   color: white;
   font-size: 18px;
   font-weight: 800;
   background: linear-gradient(135deg, #ff8a3d, #f64ecb);
-  box-shadow: 0 10px 22px rgba(246,78,203,0.35);
+  box-shadow: 0 10px 24px rgba(246,78,203,0.35);
 }
 
 h1 {
   margin: 20px 0 8px;
-  font-size: 44px;
+  font-size: 46px;
   color: #263238;
   text-shadow: 3px 4px 0 #fff176;
 }
 
 .subtitle {
-  margin: 0 0 28px;
+  margin-bottom: 28px;
   font-size: 20px;
   font-weight: 700;
   color: #546e7a;
@@ -105,27 +103,18 @@ h1 {
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #ff5f6d, #ffc371, #47e891, #45caff);
-  animation: load 4s forwards ease-in-out;
-}
-
-@keyframes load {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
+  transition: width 0.04s linear;
 }
 
 .percent {
   margin-top: 18px;
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
   color: #ff6f00;
 }
 
 .loading-text {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 18px;
   font-weight: 700;
   color: #607d8b;
@@ -134,29 +123,30 @@ h1 {
 .footer {
   position: fixed;
   bottom: 22px;
+  z-index: 2;
   width: 100%;
   text-align: center;
   font-size: 18px;
   font-weight: 800;
-  color: rgba(38,50,56,0.65);
+  color: rgba(38,50,56,0.72);
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="loading-card">
   <div class="book">📖</div>
   <div class="badge">เกมการเรียนรู้</div>
   <h1>เกมภาษาไทย</h1>
   <div class="subtitle">เตรียมเข้าสู่โลกแห่งการอ่านแสนสนุก</div>
 
   <div class="progress-box">
-    <div class="progress-bar"></div>
+    <div class="progress-bar" id="progressBar"></div>
   </div>
 
   <div class="percent" id="percent">0%</div>
-  <div class="loading-text">กำลังโหลดความสนุก...</div>
+  <div class="loading-text" id="loadingText">กำลังโหลดความสนุก...</div>
 </div>
 
 <div class="footer">สร้างโดย ครูเจมส์</div>
@@ -164,14 +154,18 @@ h1 {
 <script>
 let percent = 0;
 const percentText = document.getElementById("percent");
+const progressBar = document.getElementById("progressBar");
+const loadingText = document.getElementById("loadingText");
 
 const loading = setInterval(() => {
   percent++;
   percentText.textContent = percent + "%";
+  progressBar.style.width = percent + "%";
 
   if (percent >= 100) {
     clearInterval(loading);
     percentText.textContent = "พร้อมแล้ว!";
+    loadingText.textContent = "กำลังเข้าสู่หน้าเกม...";
   }
 }, 40);
 </script>
